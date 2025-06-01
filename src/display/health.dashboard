@@ -1,0 +1,75 @@
+"""
+Real-time system health dashboard display
+Provides visual health monitoring with color-coded metrics
+"""
+
+from ..models.data_models import SystemMetrics, AgentStatus
+from ..core.analyzer import SystemStateAnalyzer
+from ..utils.colors import Colors
+
+def display_system_health_dashboard(metrics: SystemMetrics):
+    """Display real-time system health dashboard with visual indicators"""
+    c = Colors
+    analyzer = SystemStateAnalyzer()
+    health_score = analyzer.calculate_health_score(metrics)
+    health_color = analyzer.get_health_color(health_score)
+    
+    print(f"\n{c.BOLD}{c.CYAN}┌────────────── 📊 REAL-TIME SYSTEM DASHBOARD ──────────────┐{c.RESET}")
+    print(f"{c.BOLD}{c.CYAN}│{c.RESET}                                                        {c.BOLD}{c.CYAN}│{c.RESET}")
+    
+    # Overall health with visual bar
+    health_bar = analyzer.create_visual_bar(health_score, 100, 15, False)
+    print(f"{c.BOLD}{c.CYAN}│{c.RESET} {c.BOLD}🏥 OVERALL HEALTH:{c.RESET} {health_color}{health_bar} {health_score:.1f}/100{c.RESET} {c.BOLD}{c.CYAN}│{c.RESET}")
+    print(f"{c.BOLD}{c.CYAN}│{c.RESET}                                                        {c.BOLD}{c.CYAN}│{c.RESET}")
+    
+    # Key metrics with visual bars
+    integrity_bar = analyzer.create_visual_bar(metrics.system_integrity, 100, 12, False)
+    confidence_bar = analyzer.create_visual_bar(metrics.agent_confidence, 100, 12, False)
+    coordination_bar = analyzer.create_visual_bar(metrics.coordination_efficiency, 100, 12, False)
+    
+    print(f"{c.BOLD}{c.CYAN}│{c.RESET} {c.WHITE}Integrity:    {c.GREEN}{integrity_bar}{c.RESET} {metrics.system_integrity:.1f}% {c.BOLD}{c.CYAN}│{c.RESET}")
+    print(f"{c.BOLD}{c.CYAN}│{c.RESET} {c.WHITE}Confidence:   {c.BLUE}{confidence_bar}{c.RESET} {metrics.agent_confidence:.1f}% {c.BOLD}{c.CYAN}│{c.RESET}")
+    print(f"{c.BOLD}{c.CYAN}│{c.RESET} {c.WHITE}Coordination: {c.MAGENTA}{coordination_bar}{c.RESET} {metrics.coordination_efficiency:.1f}% {c.BOLD}{c.CYAN}│{c.RESET}")
+    print(f"{c.BOLD}{c.CYAN}│{c.RESET}                                                        {c.BOLD}{c.CYAN}│{c.RESET}")
+    
+    # Performance metrics with color coding
+    throughput_color = c.GREEN if metrics.message_throughput > 40 else c.YELLOW if metrics.message_throughput > 30 else c.RED
+    latency_color = c.GREEN if metrics.response_latency < 200 else c.YELLOW if metrics.response_latency < 400 else c.RED
+    error_color = c.GREEN if metrics.error_rate < 0.005 else c.YELLOW if metrics.error_rate < 0.02 else c.RED
+    
+    print(f"{c.BOLD}{c.CYAN}│{c.RESET} {c.WHITE}Throughput:{c.RESET} {throughput_color}{metrics.message_throughput:.1f} msg/s{c.RESET}  {c.WHITE}Latency:{c.RESET} {latency_color}{metrics.response_latency:.0f}ms{c.RESET} {c.BOLD}{c.CYAN}│{c.RESET}")
+    print(f"{c.BOLD}{c.CYAN}│{c.RESET} {c.WHITE}Error Rate:{c.RESET} {error_color}{metrics.error_rate:.3f}%{c.RESET}                            {c.BOLD}{c.CYAN}│{c.RESET}")
+    print(f"{c.BOLD}{c.CYAN}│{c.RESET}                                                        {c.BOLD}{c.CYAN}│{c.RESET}")
+    print(f"{c.BOLD}{c.CYAN}└────────────────────────────────────────────────────────────┘{c.RESET}")
+
+def display_agent_status_summary(agents: list[AgentStatus]):
+    """Display a summary of all agent statuses"""
+    c = Colors
+    
+    print(f"\n{c.BOLD}{c.CYAN}🤖 Agent Status Summary:{c.RESET}")
+    for agent in agents:
+        confidence_color = c.GREEN if agent.confidence > 80 else c.YELLOW if agent.confidence > 60 else c.RED
+        coordination_color = c.GREEN if agent.coordination_score > 80 else c.YELLOW if agent.coordination_score > 60 else c.RED
+        
+        print(f"   {agent.state.value} {c.WHITE}{agent.agent_id:<18}{c.RESET} "
+              f"Conf: {confidence_color}{agent.confidence:.1f}%{c.RESET} "
+              f"Coord: {coordination_color}{agent.coordination_score:.1f}%{c.RESET} "
+              f"Errors: {agent.error_count}")
+
+def display_compact_health_overview(metrics: SystemMetrics, show_details: bool = False):
+    """Display a compact health overview for use in other displays"""
+    c = Colors
+    analyzer = SystemStateAnalyzer()
+    health_score = analyzer.calculate_health_score(metrics)
+    health_color = analyzer.get_health_color(health_score)
+    status = analyzer.get_health_status(health_score)
+    
+    print(f"{c.BOLD}{c.WHITE}💊 System Health: {health_color}{status} ({health_score:.1f}/100){c.RESET}")
+    
+    if show_details:
+        print(f"   Integrity: {metrics.system_integrity:.1f}% | "
+              f"Confidence: {metrics.agent_confidence:.1f}% | "
+              f"Coordination: {metrics.coordination_efficiency:.1f}%")
+        print(f"   Throughput: {metrics.message_throughput:.1f} msg/s | "
+              f"Latency: {metrics.response_latency:.0f}ms | "
+              f"Errors: {metrics.error_rate:.3f}%")
