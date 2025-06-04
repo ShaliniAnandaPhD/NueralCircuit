@@ -1,3 +1,15 @@
+**Attribution & Use Notice**
+
+The content, evaluations, architectural designs, test results, and documentation presented on this page are the intellectual property of **Shalini Ananda, PhD.**
+
+Unauthorized reproduction, distribution, repackaging, or misrepresentation of this work — including partial excerpts, derivative architectures, or evaluation methods — **is strictly prohibited** without express written permission.
+
+If referencing or adapting this material in any form, you must provide **clear and visible attribution** to the original author and project.
+
+Failure to comply may constitute a violation of copyright, moral rights, or open-source license terms, and may result in formal takedown requests, project-level bans, or legal action.
+
+© 2025 Shalini Ananda. All rights reserved.
+
 # NeuroCircuit: Complete Neural Coordination System
 
 
